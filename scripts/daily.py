@@ -186,10 +186,6 @@ def main():
     today_str = today.isoformat()
     output_path = ENTRIES_DIR / f"{today_str}.md"
 
-    if output_path.exists():
-        print(f"Entry for {today_str} already exists, skipping.")
-        return
-
     print(f"Generating entry for {today_str} ...")
 
     feeds = load_feeds()
