@@ -1,0 +1,28 @@
+feeds:
+  - name: Reuters
+    url: https://feeds.reuters.com/reuters/topNews
+    category: world
+
+  - name: NPR News
+    url: https://feeds.npr.org/1001/rss.xml
+    category: us
+
+  - name: BBC World
+    url: http://feeds.bbci.co.uk/news/world/rss.xml
+    category: world
+
+  - name: The Guardian
+    url: https://www.theguardian.com/world/rss
+    category: world
+
+  - name: Christian Science Monitor
+    url: https://rss.csmonitor.com/feeds/top
+    category: world
+
+  - name: NPR Culture
+    url: https://feeds.npr.org/1008/rss.xml
+    category: culture
+
+  - name: ESPN
+    url: https://www.espn.com/espn/rss/news
+    category: sports

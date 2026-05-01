@@ -1,0 +1,181 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const entries = await getCollection('entries');
+
+const sorted = entries.sort((a, b) => b.data.date.localeCompare(a.data.date));
+const latest = sorted[0];
+
+let Content: any = null;
+if (latest) {
+  const rendered = await latest.render();
+  Content = rendered.Content;
+}
+
+function formatDate(dateStr: string) {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+---
+
+<Layout>
+  {latest ? (
+    <article>
+      <header class="entry-header">
+        <time datetime={latest.data.date}>{formatDate(latest.data.date)}</time>
+        <div class="themes">
+          {latest.data.themes.map((t: string) => <span class="tag">{t}</span>)}
+        </div>
+      </header>
+
+      <blockquote class="verse">
+        <p class="verse-text">{latest.data.verse_text}</p>
+        <cite>{latest.data.verse_ref} <span class="translation">({latest.data.translation})</span></cite>
+      </blockquote>
+
+      <div class="reflection">
+        <Content />
+      </div>
+
+      <section class="context">
+        <h2 class="context-heading">What prompted this</h2>
+        <p class="news-summary">{latest.data.news_summary}</p>
+        <ul class="sources">
+          {latest.data.sources.map((s: { title: string; url: string; outlet: string }) => (
+            <li>
+              <a href={s.url} target="_blank" rel="noopener noreferrer">
+                {s.title}
+              </a>
+              <span class="outlet">{s.outlet}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </article>
+  ) : (
+    <div class="empty">
+      <p>The first entry will appear tomorrow morning.</p>
+    </div>
+  )}
+</Layout>
+
+<style>
+  .entry-header {
+    margin-bottom: 2rem;
+  }
+
+  time {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+
+  .themes { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+  .tag {
+    font-size: 0.75rem;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+    letter-spacing: 0.03em;
+  }
+
+  .verse {
+    margin: 0 0 2rem;
+    padding: 1.5rem 1.75rem;
+    border-left: 3px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 5%, var(--bg));
+  }
+
+  .verse-text {
+    font-family: var(--serif);
+    font-size: 1.35rem;
+    line-height: 1.65;
+    color: var(--ink);
+    margin-bottom: 0.75rem;
+    font-style: italic;
+  }
+
+  cite {
+    font-size: 0.85rem;
+    color: var(--muted);
+    font-style: normal;
+    letter-spacing: 0.03em;
+  }
+
+  .translation { opacity: 0.7; }
+
+  .reflection {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #2a2a2a;
+    margin-bottom: 3rem;
+  }
+
+  .context {
+    border-top: 1px solid var(--faint);
+    padding-top: 1.25rem;
+  }
+
+  .context-heading {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  .news-summary {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .sources {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .sources li {
+    font-size: 0.82rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .sources a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--faint);
+  }
+
+  .sources a:hover { text-decoration-color: var(--accent); }
+
+  .outlet {
+    color: var(--muted);
+    font-size: 0.75rem;
+  }
+
+  .empty {
+    padding: 4rem 0;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+</style>

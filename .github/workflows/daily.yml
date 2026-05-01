@@ -1,0 +1,50 @@
+name: Daily Verse
+
+on:
+  schedule:
+    # 11:00 UTC = 6:00 AM EST (UTC-5) / 7:00 AM EDT (UTC-4)
+    - cron: '0 11 * * *'
+  workflow_dispatch:
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Cache Bible JSON
+        id: cache-bible
+        uses: actions/cache@v4
+        with:
+          path: data/bible-kjv.json
+          key: bible-kjv-v1
+
+      - name: Download Bible JSON
+        if: steps.cache-bible.outputs.cache-hit != 'true'
+        run: python scripts/download_bible.py
+
+      - name: Generate daily entry
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python scripts/daily.py
+
+      - name: Commit and push
+        run: |
+          git config user.name "Daily Verse Bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add site/src/content/entries/
+          git diff --staged --quiet || git commit -m "entry: $(date -u +%Y-%m-%d)"
+          git push

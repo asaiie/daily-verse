@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.env
+venv/
+.venv/
+
+# Bible JSON - large file, downloaded at runtime by GitHub Actions
+data/bible-kjv.json
+
+# Astro
+site/node_modules/
+site/.astro/
+site/dist/
+site/.env
+
+# macOS
+.DS_Store
