@@ -105,7 +105,7 @@ def validate_verse(bible, ref):
     chapter = match.group(2)
     verse = match.group(3)
     try:
-        text = bible[book][chapter][verse]
+        text = bible[book][chapter][verse].replace("{", "").replace("}", "")
         canonical_ref = f"{book} {chapter}:{verse}"
         return canonical_ref, text
     except KeyError:
