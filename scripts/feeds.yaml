@@ -1,22 +1,22 @@
 feeds:
-  - name: Reuters
-    url: https://feeds.reuters.com/reuters/topNews
+  - name: AP News
+    url: https://feeds.apnews.com/rss/apf-topnews
+    category: world
+
+  - name: BBC World
+    url: http://feeds.bbci.co.uk/news/world/rss.xml
     category: world
 
   - name: NPR News
     url: https://feeds.npr.org/1001/rss.xml
     category: us
 
-  - name: BBC World
-    url: http://feeds.bbci.co.uk/news/world/rss.xml
-    category: world
-
   - name: The Guardian
     url: https://www.theguardian.com/world/rss
     category: world
 
-  - name: Christian Science Monitor
-    url: https://rss.csmonitor.com/feeds/top
+  - name: Al Jazeera
+    url: https://www.aljazeera.com/xml/rss/all.xml
     category: world
 
   - name: NPR Culture

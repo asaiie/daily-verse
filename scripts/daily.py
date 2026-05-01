@@ -54,7 +54,7 @@ def fetch_stories(feeds):
     for feed in feeds:
         try:
             parsed = feedparser.parse(feed["url"])
-            for entry in parsed.entries[:8]:
+            for entry in parsed.entries[:4]:
                 title = entry.get("title", "").strip()
                 summary = entry.get("summary", entry.get("description", "")).strip()
                 summary = re.sub(r"<[^>]+>", "", summary)[:300]
