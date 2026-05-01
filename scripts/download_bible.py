@@ -19,7 +19,7 @@ def download_and_convert():
     print(f"Downloading KJV Bible from {SOURCE_URL} ...")
     response = requests.get(SOURCE_URL, timeout=60)
     response.raise_for_status()
-    raw = response.json()
+    raw = json.loads(response.content.decode("utf-8-sig"))
 
     print(f"Converting {len(raw)} books ...")
     bible = {}
