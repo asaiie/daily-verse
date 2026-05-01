@@ -28,5 +28,6 @@ Respond with a single JSON object and nothing else:
   "themes": ["theme1", "theme2"],
   "news_summary": "1–2 sentence summary of the dominant theme across today's news, written contemplatively.",
   "verse_ref": "Book Chapter:Verse",
+  "verse_text": "The full text of the verse in KJV.",
   "reflection": "2–4 sentence reflection connecting the verse to the theme without naming specific people, parties, or events."
 }

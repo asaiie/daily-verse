@@ -4,8 +4,9 @@
 import json
 import re
 import sys
-from datetime import date
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import anthropic
 import feedparser
@@ -41,8 +42,6 @@ BOOK_ALIASES = {
     "2nd John": "2 John",
     "3rd John": "3 John",
 }
-
-FALLBACK_VERSE = "Psalm 46:1"
 
 
 def load_feeds():
@@ -183,7 +182,7 @@ def write_entry(today, stories, result, verse_ref, verse_text):
 
 
 def main():
-    today = date.today()
+    today = datetime.now(ZoneInfo("America/New_York")).date()
     today_str = today.isoformat()
     output_path = ENTRIES_DIR / f"{today_str}.md"
 
@@ -207,29 +206,17 @@ def main():
     print("Calling Claude API ...")
     result = call_claude(stories, today_str)
 
-    verse_result = validate_verse(bible, result.get("verse_ref", ""))
+    verse_ref = result.get("verse_ref", "").strip()
+    verse_text = result.get("verse_text", "").strip()
+    print(f"Claude suggested: {verse_ref!r}")
 
-    if not verse_result:
-        print(
-            f"Verse '{result.get('verse_ref')}' not found in Bible JSON, retrying ...",
-            file=sys.stderr,
-        )
-        result = call_claude(stories, today_str)
-        verse_result = validate_verse(bible, result.get("verse_ref", ""))
-
-    if not verse_result:
-        print(
-            f"Verse still invalid after retry, falling back to {FALLBACK_VERSE}",
-            file=sys.stderr,
-        )
-        verse_result = validate_verse(bible, FALLBACK_VERSE)
-        if verse_result:
-            result["verse_ref"] = FALLBACK_VERSE
-        else:
-            print("Fallback verse not found — is bible-kjv.json intact?", file=sys.stderr)
-            sys.exit(1)
-
-    verse_ref, verse_text = verse_result
+    # Prefer the authoritative bundled text if the ref is found; otherwise trust Claude
+    bundled = validate_verse(bible, verse_ref)
+    if bundled:
+        verse_ref, verse_text = bundled
+        print("Using bundled Bible text.")
+    else:
+        print(f"Ref not found in Bible JSON — using Claude's text for {verse_ref!r}")
     write_entry(today, stories, result, verse_ref, verse_text)
     print("Done.")
 
